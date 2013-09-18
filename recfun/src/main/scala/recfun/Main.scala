@@ -57,5 +57,18 @@ object Main {
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = {
+    
+    def traverse(moneyLeft: Int, coinsLeft: List[Int]): Int = {
+      if(moneyLeft == 0) 
+        return 1
+      
+      if((coinsLeft.isEmpty && moneyLeft >= 1) || moneyLeft < 0)
+        return 0
+      
+      traverse(moneyLeft, coinsLeft.tail) + traverse(moneyLeft - coinsLeft.head, coinsLeft)
+    }
+    
+    traverse(money, coins.sortWith(_.compareTo(_) < 0))
+  }
 }
