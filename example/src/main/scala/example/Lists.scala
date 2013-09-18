@@ -24,12 +24,12 @@ object Lists {
    * @return The sum of all elements in `xs`
    */
   def sum(xs: List[Int]): Int = {
-    if(xs.isEmpty) return 0;
-    if(xs.size == 1) {
+    if (xs.isEmpty)
+      0
+    else if (xs.size == 1)
       xs.head;
-    } else {
+    else
       xs.head + sum(xs.tail)
-    }
   }
 
   /**
@@ -46,17 +46,16 @@ object Lists {
    * @throws java.util.NoSuchElementException if `xs` is an empty list
    */
   def max(xs: List[Int]): Int = {
-    if(xs.isEmpty) throw new java.util.NoSuchElementException();
-    
-    if(xs.size == 1) {
-      return xs.head;
-    }
-    
-    val maxvalue = max(xs.tail);
-    if(xs.head > maxvalue) {
+    if (xs.isEmpty) throw new java.util.NoSuchElementException();
+    else if (xs.size == 1)
       xs.head;
-    } else {
-      maxvalue;
+    else {
+      val maxvalue = max(xs.tail);
+      if (xs.head > maxvalue) {
+        xs.head;
+      } else {
+        maxvalue;
+      }
     }
   }
 }
