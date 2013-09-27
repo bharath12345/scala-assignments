@@ -66,7 +66,7 @@ object Main {
       if((coinsLeft.isEmpty && moneyLeft >= 1) || moneyLeft < 0)
         return 0
       
-      traverse(moneyLeft, coinsLeft.tail) + traverse(moneyLeft - coinsLeft.head, coinsLeft)
+       traverse(moneyLeft, coinsLeft.tail) + traverse(moneyLeft - coinsLeft.head, coinsLeft)
     }
     
     traverse(money, coins.sortWith(_.compareTo(_) < 0))
