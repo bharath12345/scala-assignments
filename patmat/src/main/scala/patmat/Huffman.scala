@@ -79,29 +79,30 @@ object Huffman {
    *   }
    */
   def times(chars: List[Char]): List[(Char, Int)] = {
-    
+
     def traverse(char: Char, charList: List[Char], buf: ListBuffer[(Char, Int)]): ListBuffer[(Char, Int)] = {
-      
+
       def addOrIncChar(char: Char, tuples: ListBuffer[(Char, Int)]): ListBuffer[(Char, Int)] = {
-        if(tuples.size == 0) {
+        if (tuples.size == 0) {
           val pair: (Char, Int) = (char, 1)
           val buffer = new ListBuffer[(Char, Int)]
           buffer += pair
         } else {
           val tuple = tuples.head
-          if(tuple._1 == char) {
-        	val x = tuple._2
+          if (tuple._1 == char) {
+            val x = tuple._2
             val newtuple = tuple.copy(_2 = x + 1)
             val newtuples = newtuple +: tuples.tail
             newtuples
           } else {
-            addOrIncChar(char, tuples.tail)
+            val newtuples = addOrIncChar(char, tuples.tail)
+            tuples.head +: newtuples
           }
         }
       }
 
       val buffer = addOrIncChar(char, buf)
-      if(charList.size != 0) {
+      if (charList.size != 0) {
         return traverse(charList.head, charList.tail, buffer)
       } else {
         return buffer
@@ -109,7 +110,7 @@ object Huffman {
     }
 
     val finallist = traverse(chars.head, chars.tail, new ListBuffer[(Char, Int)]).toList
-    println(finallist)
+    //println(finallist)
     finallist
   }
 
@@ -120,7 +121,20 @@ object Huffman {
    * head of the list should have the smallest weight), where the weight
    * of a leaf is the frequency of the character.
    */
-  def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = ???
+  def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
+    def constructLeaf(tuple: (Char, Int), tupleList: List[(Char, Int)], leafList: ListBuffer[Leaf]): ListBuffer[Leaf] = {
+      val leaf = Leaf(tuple._1, tuple._2)
+      leafList += leaf
+      if (tupleList.size > 0)
+        constructLeaf(tupleList.head, tupleList.tail, leafList)
+      else
+        leafList
+    }
+
+    val sortedFreq = freqs.sortBy(_._2)
+    //println(sortedFreq)
+    constructLeaf(sortedFreq.head, sortedFreq.tail, new ListBuffer[Leaf]).toList
+  }
 
   /**
    * Checks whether the list `trees` contains only one single code tree.
