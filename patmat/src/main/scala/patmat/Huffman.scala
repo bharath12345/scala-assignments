@@ -35,6 +35,37 @@ object Huffman {
     case Leaf(char, weight) => List(char)
   }
 
+  def traverseLeft(c: CodeTree): CodeTree = c match {
+    case Fork(left, right, chars, weight) => left
+    case Leaf(char, weight) => { new Error("leaf traverse left"); return null }
+  }
+
+  def traverseRight(c: CodeTree): CodeTree = c match {
+    case Fork(left, right, chars, weight) => right
+    case Leaf(char, weight) => { new Error("leaf traverse right"); return null }
+  }
+
+  def treeContains(c: CodeTree, cc: Char): Int = c match {
+    case Fork(left, right, chars, weight) => if (chars.contains(cc)) chars.size else 0
+    case Leaf(char, weight) => if (char.equals(char)) 1 else 0
+  }
+
+  def whichTreeContains(c: CodeTree, char: Char): Boolean = c match {
+    case Fork(left, right, chars, weight) => {
+      if (chars.contains(char) == false) {
+        new Error("tree does not contain");
+        false
+      } else if (treeContains(right, char) > 1) true
+      else false
+    }
+    case Leaf(char, weight) => if (char.equals(char)) true else false
+  }
+
+  def getContainingTree(c: CodeTree, char: Char): CodeTree = c match {
+    case Fork(left, right, chars, weight) => if (treeContains(left, char) > 1) left else if (treeContains(right, char) > 1) right else null
+    case Leaf(char, weight) => { new Error("trap 2"); null }
+  }
+
   def weight(tree: CodeTree): Int = evalWeight(tree)
 
   def chars(tree: CodeTree): List[Char] = evalChar(tree)
@@ -139,7 +170,7 @@ object Huffman {
   /**
    * Checks whether the list `trees` contains only one single code tree.
    */
-  def singleton(trees: List[CodeTree]): Boolean = if(trees.size == 1) true else false
+  def singleton(trees: List[CodeTree]): Boolean = if (trees.size == 1) true else false
 
   /**
    * The parameter `trees` of this function is a list of code trees ordered
@@ -155,21 +186,21 @@ object Huffman {
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
     def addOrdered(node: CodeTree, tree: List[CodeTree], fork: CodeTree, finalTree: ListBuffer[CodeTree]): ListBuffer[CodeTree] = {
-      if(evalWeight(node) < evalWeight(fork)) {
+      if (evalWeight(node) < evalWeight(fork)) {
         finalTree += node
         addOrdered(tree.head, tree.tail, fork, finalTree)
       } else {
-        finalTree += fork 
+        finalTree += fork
         finalTree += node
         finalTree ++= tree
         finalTree
       }
     }
-    
+
     val node1 = trees.head
     val node2 = trees.tail.head
     val fork = Fork(node1, node2, evalChar(node1) ::: evalChar(node2), evalWeight(node1) + evalWeight(node2))
-    
+
     val remainingTree = trees.tail.tail
     val x = addOrdered(remainingTree.head, remainingTree.tail, fork, new ListBuffer[CodeTree]).toList
     //println(x)
@@ -193,12 +224,12 @@ object Huffman {
    *    the example invocation. Also define the return type of the `until` function.
    *  - try to find sensible parameter names for `xxx`, `yyy` and `zzz`.
    */
-  def until(checkLength: List[CodeTree] => Boolean, 
-      combineTree: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): CodeTree = {
-    
-    if(checkLength(trees) == false) until(singleton, combine)(combineTree(trees))
+  def until(checkLength: List[CodeTree] => Boolean,
+    combineTree: List[CodeTree] => List[CodeTree])(trees: List[CodeTree]): CodeTree = {
+
+    if (checkLength(trees) == false) until(singleton, combine)(combineTree(trees))
     else trees.head
-    
+
   }
 
   /**
@@ -219,7 +250,26 @@ object Huffman {
    * This function decodes the bit sequence `bits` using the code tree `tree` and returns
    * the resulting list of characters.
    */
-  def decode(tree: CodeTree, bits: List[Bit]): List[Char] = ???
+  def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
+    def decodeIter(subtree: CodeTree, bit: Int, bits: List[Bit], charList: ListBuffer[Char]): ListBuffer[Char] = {
+      val treeToUse =
+        if (evalChar(subtree).size == 1) {
+          charList ++= evalChar(subtree);
+          tree
+        } else {
+          if (bit == 0) {
+            traverseLeft(subtree)
+          } else {
+            traverseRight(subtree)
+          }
+        }
+      if (bits.tail.size > 0) decodeIter(treeToUse, bits.head, bits.tail, charList)
+      else charList
+    }
+    val x = decodeIter(tree, bits.head, bits.tail, new ListBuffer[Char]).toList
+    println("decoded = " + x)
+    x
+  }
 
   /**
    * A Huffman coding tree for the French language.
@@ -237,7 +287,7 @@ object Huffman {
   /**
    * Write a function that returns the decoded secret
    */
-  def decodedSecret: List[Char] = ???
+  def decodedSecret: List[Char] = decode(frenchCode, secret)
 
   // Part 4a: Encoding using Huffman tree
 
@@ -245,7 +295,28 @@ object Huffman {
    * This function encodes `text` using the code tree `tree`
    * into a sequence of bits.
    */
-  def encode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+  def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+    
+    def encodeIter(subtree: CodeTree, char: Char, text: List[Char], charList: ListBuffer[Bit]): ListBuffer[Bit] = {
+      val treeToUse =
+        if (treeContains(subtree, char) == 1) {
+          tree
+        } else if (treeContains(subtree, char) > 1) {
+          getContainingTree(subtree, char)
+        } else {
+          return charList
+        }
+
+      val x = if (whichTreeContains(subtree, char)) 1 else 0;
+      charList += x
+
+      if (text.tail.size > 0) encodeIter(treeToUse, text.head, text.tail, charList)
+      else charList
+    }
+    val y = encodeIter(tree, text.head, text.tail, new ListBuffer[Bit]).toList
+    println("encoded = " + y)
+    y
+  }
 
   // Part 4b: Encoding using code table
 
