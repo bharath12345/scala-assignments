@@ -34,6 +34,11 @@ object Huffman {
     case Fork(left, right, chars, weight) => chars
     case Leaf(char, weight) => List(char)
   }
+  
+  def evalForkLeaf(t: CodeTree): Int = t match {
+    case Fork(left, right, chars, weight) => 1
+    case Leaf(char, weight) => 0
+  }
 
   def traverseLeft(c: CodeTree): CodeTree = c match {
     case Fork(left, right, chars, weight) => left
@@ -388,7 +393,14 @@ object Huffman {
    * This function returns the bit sequence that represents the character `char` in
    * the code table `table`.
    */
-  def codeBits(table: CodeTable)(char: Char): List[Bit] = ???
+  def codeBits(table: CodeTable)(char: Char): List[Bit] = {
+    def codeTableIter(char: Char, tuple: (Char, List[Bit]), table: List[(Char, List[Bit])]): List[Bit] = {
+      if(tuple._1 == char) tuple._2
+      else if(table.size > 0) codeTableIter(char, table.head, table.tail)
+      else {new Error("not found in table = " + char); null}
+    }
+    codeTableIter(char, table.head, table.tail)
+  }
 
   /**
    * Given a code tree, create a code table which contains, for every character in the
@@ -398,7 +410,27 @@ object Huffman {
    * a valid code tree that can be represented as a code table. Using the code tables of the
    * sub-trees, think of how to build the code table for the entire tree.
    */
-  def convert(tree: CodeTree): CodeTable = ???
+  def convert(tree: CodeTree): CodeTable = {
+    def convertIter(tree: CodeTree, codeTable: ListBuffer[(Char, List[Bit])], bitList: ListBuffer[Bit]): ListBuffer[(Char, List[Bit])] = {
+      println("working on tree = " + tree)
+      if(evalForkLeaf(tree) > 0) {
+        val leftBitList = bitList :+ 0
+        convertIter(traverseLeft(tree), codeTable, leftBitList)
+        
+        val rightBitList = bitList :+ 1
+        convertIter(traverseRight(tree), codeTable, rightBitList)
+      } else {
+        val char = evalChar(tree)
+        val tuple = (char(0), bitList.toList)
+        codeTable += tuple
+      }
+    }
+    
+    val codeTable = convertIter(tree, new ListBuffer[(Char, List[Bit])], new ListBuffer[Bit])
+    val a = codeTable.toList
+    println(a)
+    a
+  }
 
   /**
    * This function takes two code tables and merges them into one. Depending on how you
@@ -413,5 +445,8 @@ object Huffman {
    * To speed up the encoding process, it first converts the code tree to a code table
    * and then uses it to perform the actual encoding.
    */
-  def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+  def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+    val codeTable = convert(tree)
+    encode(tree)(text) // => the usual way of encoding
+  }
 }
