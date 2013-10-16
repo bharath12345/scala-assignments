@@ -47,22 +47,46 @@ object Huffman {
 
   def treeContains(c: CodeTree, cc: Char): Int = c match {
     case Fork(left, right, chars, weight) => if (chars.contains(cc)) chars.size else 0
-    case Leaf(char, weight) => if (char.equals(char)) 1 else 0
+    case Leaf(char, weight) => if (char.equals(cc)) 1 else 0
   }
 
-  def whichTreeContains(c: CodeTree, char: Char): Boolean = c match {
+  def evalLevel2Bit(t: CodeTree, direction: Boolean): Char = t match {
+    case Fork(left, right, chars, weight) => if (direction == true) evalLevel2Bit(right, true) else evalLevel2Bit(left, false)
+    case Leaf(char, weight) => char
+  }
+
+  def whichLevel2TreeContains(c: CodeTree, char: Char): Int = c match {
     case Fork(left, right, chars, weight) => {
       if (chars.contains(char) == false) {
         new Error("tree does not contain");
-        false
-      } else if (treeContains(right, char) > 1) true
-      else false
+        -1
+      } else if (treeContains(left, char) == 1) {
+        0
+      } else if (treeContains(right, char) == 1) {
+        1
+      } else {
+        2
+      }
     }
-    case Leaf(char, weight) => if (char.equals(char)) true else false
+    case Leaf(char, weight) => { new Error("tree does not contain"); -1 }
+  }
+
+  def whichTreeContains(c: CodeTree, char: Char): Int = c match {
+    case Fork(left, right, chars, weight) => {
+      if (chars.contains(char) == false) {
+        new Error("tree does not contain");
+        -1
+      } else if (treeContains(left, char) > 0) {
+        0
+      } else /*if (treeContains(right, char) > 1) */ {
+        1
+      }
+    }
+    case Leaf(char, weight) => { new Error("tree does not contain"); -1 }
   }
 
   def getContainingTree(c: CodeTree, char: Char): CodeTree = c match {
-    case Fork(left, right, chars, weight) => if (treeContains(left, char) > 1) left else if (treeContains(right, char) > 1) right else null
+    case Fork(left, right, chars, weight) => if (treeContains(left, char) >= 1) left else if (treeContains(right, char) >= 1) right else null
     case Leaf(char, weight) => { new Error("trap 2"); null }
   }
 
@@ -252,9 +276,30 @@ object Huffman {
    */
   def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
     def decodeIter(subtree: CodeTree, bit: Int, bits: List[Bit], charList: ListBuffer[Char]): ListBuffer[Char] = {
+      println("bit = " + bit)
+
+      val c = evalChar(subtree)
+      println("c = " + c + " len = " + c.size)
+
       val treeToUse =
-        if (evalChar(subtree).size == 1) {
-          charList ++= evalChar(subtree);
+        if(c.size == 1) {
+          val decodedChar = evalLevel2Bit(subtree, true)
+          charList += decodedChar
+          println("list = " + charList)
+          tree
+        } else if (c.size == 2) {
+          val decodedChar =
+            if (bit == 1){
+              println("going right")
+              evalLevel2Bit(subtree, true)
+            }
+            else {
+              println("going left")
+              evalLevel2Bit(subtree, false)
+            }
+              
+          charList += decodedChar
+          println("list = " + charList)
           tree
         } else {
           if (bit == 0) {
@@ -263,8 +308,12 @@ object Huffman {
             traverseRight(subtree)
           }
         }
-      if (bits.tail.size > 0) decodeIter(treeToUse, bits.head, bits.tail, charList)
+
+      println("using tree = " + treeToUse)
+      if (bits.size > 0) decodeIter(treeToUse, bits.head, bits.tail, charList)
+      else if(evalChar(treeToUse).size == 1) decodeIter(treeToUse, bit, bits, charList)
       else charList
+
     }
     val x = decodeIter(tree, bits.head, bits.tail, new ListBuffer[Char]).toList
     println("decoded = " + x)
@@ -296,22 +345,35 @@ object Huffman {
    * into a sequence of bits.
    */
   def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
-    
+
     def encodeIter(subtree: CodeTree, char: Char, text: List[Char], charList: ListBuffer[Bit]): ListBuffer[Bit] = {
-      val treeToUse =
-        if (treeContains(subtree, char) == 1) {
-          tree
-        } else if (treeContains(subtree, char) > 1) {
-          getContainingTree(subtree, char)
-        } else {
-          return charList
-        }
+      println("char = " + char)
+      println("subtree = " + subtree)
 
-      val x = if (whichTreeContains(subtree, char)) 1 else 0;
-      charList += x
+      val ss = treeContains(subtree, char)
+      println("ss = " + ss)
 
-      if (text.tail.size > 0) encodeIter(treeToUse, text.head, text.tail, charList)
-      else charList
+      if (ss == 2) {
+        val x = whichLevel2TreeContains(subtree, char)
+        println("x = " + x)
+        charList += x
+
+        println("using full tree = " + tree)
+        if (text.size > 0) encodeIter(tree, text.head, text.tail, charList)
+        else charList
+
+      } else if (ss > 2) {
+        val x = whichTreeContains(subtree, char)
+        println("x = " + x)
+        charList += x
+
+        val treeToUse = getContainingTree(subtree, char)
+        println("using subtree = " + treeToUse)
+        encodeIter(treeToUse, char, text, charList)
+
+      } else {
+        return charList
+      }
     }
     val y = encodeIter(tree, text.head, text.tail, new ListBuffer[Bit]).toList
     println("encoded = " + y)

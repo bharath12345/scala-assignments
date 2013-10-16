@@ -52,4 +52,16 @@ class HuffmanSuite extends FunSuite {
   test("decoded secret") {
     //println(decodedSecret)
   }
+  
+  test("encode slightly bigger") {
+    new TestTrees {
+      //println(encode(t2)("abd".toList))
+    }
+  }
+  
+  test("decode and encode slightly bigger") {
+    new TestTrees {
+      //assert(decode(t2, encode(t2)("abd".toList)) === "abd".toList)
+    }
+  }
 }
