@@ -34,7 +34,7 @@ object Huffman {
     case Fork(left, right, chars, weight) => chars
     case Leaf(char, weight) => List(char)
   }
-  
+
   def evalForkLeaf(t: CodeTree): Int = t match {
     case Fork(left, right, chars, weight) => 1
     case Leaf(char, weight) => 0
@@ -169,9 +169,13 @@ object Huffman {
       }
     }
 
-    val finallist = traverse(chars.head, chars.tail, new ListBuffer[(Char, Int)]).toList
-    //println(finallist)
-    finallist
+    if (chars.length > 0) {
+      val finallist = traverse(chars.head, chars.tail, new ListBuffer[(Char, Int)]).toList
+      //println(finallist)
+      finallist
+    } else {
+      (new ListBuffer[(Char, Int)]).toList
+    }
   }
 
   /**
@@ -191,9 +195,13 @@ object Huffman {
         leafList
     }
 
-    val sortedFreq = freqs.sortBy(_._2)
-    //println(sortedFreq)
-    constructLeaf(sortedFreq.head, sortedFreq.tail, new ListBuffer[Leaf]).toList
+    if (freqs.length > 0) {
+      val sortedFreq = freqs.sortBy(_._2)
+      //println(sortedFreq)
+      constructLeaf(sortedFreq.head, sortedFreq.tail, new ListBuffer[Leaf]).toList
+    } else {
+      (new ListBuffer[Leaf]).toList
+    }
   }
 
   /**
@@ -226,14 +234,18 @@ object Huffman {
       }
     }
 
-    val node1 = trees.head
-    val node2 = trees.tail.head
-    val fork = Fork(node1, node2, evalChar(node1) ::: evalChar(node2), evalWeight(node1) + evalWeight(node2))
+    if (trees.length > 0) {
+      val node1 = trees.head
+      val node2 = trees.tail.head
+      val fork = Fork(node1, node2, evalChar(node1) ::: evalChar(node2), evalWeight(node1) + evalWeight(node2))
 
-    val remainingTree = trees.tail.tail
-    val x = addOrdered(remainingTree.head, remainingTree.tail, fork, new ListBuffer[CodeTree]).toList
-    //println(x)
-    x
+      val remainingTree = trees.tail.tail
+      val x = addOrdered(remainingTree.head, remainingTree.tail, fork, new ListBuffer[CodeTree]).toList
+      //println(x)
+      x
+    } else {
+      (new ListBuffer[CodeTree]).toList
+    }
   }
 
   /**
@@ -287,22 +299,21 @@ object Huffman {
       println("c = " + c + " len = " + c.size)
 
       val treeToUse =
-        if(c.size == 1) {
+        if (c.size == 1) {
           val decodedChar = evalLevel2Bit(subtree, true)
           charList += decodedChar
           println("list = " + charList)
           tree
         } else if (c.size == 2) {
           val decodedChar =
-            if (bit == 1){
+            if (bit == 1) {
               println("going right")
               evalLevel2Bit(subtree, true)
-            }
-            else {
+            } else {
               println("going left")
               evalLevel2Bit(subtree, false)
             }
-              
+
           charList += decodedChar
           println("list = " + charList)
           tree
@@ -316,13 +327,18 @@ object Huffman {
 
       println("using tree = " + treeToUse)
       if (bits.size > 0) decodeIter(treeToUse, bits.head, bits.tail, charList)
-      else if(evalChar(treeToUse).size == 1) decodeIter(treeToUse, bit, bits, charList)
+      else if (evalChar(treeToUse).size == 1) decodeIter(treeToUse, bit, bits, charList)
       else charList
 
     }
-    val x = decodeIter(tree, bits.head, bits.tail, new ListBuffer[Char]).toList
-    println("decoded = " + x)
-    x
+
+    if (tree != null && bits.length > 0) {
+      val x = decodeIter(tree, bits.head, bits.tail, new ListBuffer[Char]).toList
+      println("decoded = " + x)
+      x
+    } else {
+      (new ListBuffer[Char]).toList
+    }
   }
 
   /**
@@ -380,9 +396,14 @@ object Huffman {
         return charList
       }
     }
-    val y = encodeIter(tree, text.head, text.tail, new ListBuffer[Bit]).toList
-    println("encoded = " + y)
-    y
+
+    if (tree != null && text.length > 0) {
+      val y = encodeIter(tree, text.head, text.tail, new ListBuffer[Bit]).toList
+      println("encoded = " + y)
+      y
+    } else {
+      (new ListBuffer[Bit]).toList
+    }
   }
 
   // Part 4b: Encoding using code table
@@ -395,11 +416,15 @@ object Huffman {
    */
   def codeBits(table: CodeTable)(char: Char): List[Bit] = {
     def codeTableIter(char: Char, tuple: (Char, List[Bit]), table: List[(Char, List[Bit])]): List[Bit] = {
-      if(tuple._1 == char) tuple._2
-      else if(table.size > 0) codeTableIter(char, table.head, table.tail)
-      else {new Error("not found in table = " + char); null}
+      if (tuple._1 == char) tuple._2
+      else if (table.size > 0) codeTableIter(char, table.head, table.tail)
+      else { new Error("not found in table = " + char); null }
     }
-    codeTableIter(char, table.head, table.tail)
+    if (table.length > 0) {
+      codeTableIter(char, table.head, table.tail)
+    } else {
+      (new ListBuffer[Bit]).toList
+    }
   }
 
   /**
@@ -413,10 +438,10 @@ object Huffman {
   def convert(tree: CodeTree): CodeTable = {
     def convertIter(tree: CodeTree, codeTable: ListBuffer[(Char, List[Bit])], bitList: ListBuffer[Bit]): ListBuffer[(Char, List[Bit])] = {
       println("working on tree = " + tree)
-      if(evalForkLeaf(tree) > 0) {
+      if (evalForkLeaf(tree) > 0) {
         val leftBitList = bitList :+ 0
         convertIter(traverseLeft(tree), codeTable, leftBitList)
-        
+
         val rightBitList = bitList :+ 1
         convertIter(traverseRight(tree), codeTable, rightBitList)
       } else {
@@ -425,11 +450,15 @@ object Huffman {
         codeTable += tuple
       }
     }
-    
-    val codeTable = convertIter(tree, new ListBuffer[(Char, List[Bit])], new ListBuffer[Bit])
-    val a = codeTable.toList
-    println(a)
-    a
+
+    if (tree != null) {
+      val codeTable = convertIter(tree, new ListBuffer[(Char, List[Bit])], new ListBuffer[Bit])
+      val a = codeTable.toList
+      println(a)
+      a
+    } else {
+      (new ListBuffer[(Char, List[Bit])]).toList
+    }
   }
 
   /**

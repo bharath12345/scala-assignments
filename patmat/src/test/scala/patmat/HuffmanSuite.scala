@@ -101,4 +101,8 @@ class HuffmanSuite extends FunSuite {
       println(convert(t3))
     }
   }
+  
+  test("times nil") {
+    println(times(Nil))
+  }
 }
