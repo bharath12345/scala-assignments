@@ -1,6 +1,7 @@
 package forcomp
 
 import common._
+import scala.collection.immutable.HashMap
 
 object Anagrams {
 
@@ -54,13 +55,34 @@ object Anagrams {
    *
    *  This means that the `dictionaryByOccurrences` map will contain an entry:
    *
-   *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
+   *    List(('a', 1), ('e', 1), ('t', 1)) -> List("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = ???
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
+    def dicOccurIter(word: Word, words: List[Word], dicMap: Map[Occurrences, List[Word]]): Map[Occurrences, List[Word]] = {
+      val occurrences = wordOccurrences(word)
+      var mapCopy = dicMap
+      
+      dicMap.get(occurrences) match {
+        case Some(wordList: List[Word]) => {
+          wordList +: word  
+        } 
+        case None => {
+          val wordList = List(word)
+          mapCopy += (occurrences -> wordList) 
+        } 
+      }
+      
+      dicOccurIter(words.head, words.tail, mapCopy)
+    }  
+    
+    dicOccurIter(dictionary.head, dictionary.tail, new HashMap[Occurrences, List[Word]]);
+  }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    dictionaryByOccurrences(wordOccurrences(word))
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
