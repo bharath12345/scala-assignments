@@ -1,22 +1,24 @@
 object slide_week_5_3 {
 
-  def msort(xs: List[Int]): List[Int] = {
+import math.Ordering
+
+  def msort[T](xs: List[T])(lt: (T, T) => Boolean): List[T] = {
     val n = xs.length / 2
     if (n == 0) xs
     else {
-      def merge(xs: List[Int], ys: List[Int]): List[Int] = (xs, ys) match {
+      def merge(xs: List[T], ys: List[T])(lt: (T, T) => Boolean): List[T] = (xs, ys) match {
         case (xs1, Nil) => xs1
         case (Nil, xs1) => xs1
         case (a :: as, b :: bs) => {
-          if(a < b) a :: merge(as, ys)
-          else b :: merge(xs, bs)
+          if(lt(a,b)) a :: merge(as, ys)(lt)
+          else b :: merge(xs, bs)(lt)
         }
       }
       val (fst, snd) = xs splitAt n
-      merge(msort(fst), msort(snd))
+      merge(msort(fst)(lt), msort(snd)(lt))(lt)
     }
-  }                                               //> msort: (xs: List[Int])List[Int]
+  }                                               //> msort: [T](xs: List[T])(lt: (T, T) => Boolean)List[T]
   
   var x = List(3, 1, 6, 5, 9)                     //> x  : List[Int] = List(3, 1, 6, 5, 9)
-  msort(x)                                        //> res0: List[Int] = List(1, 3, 5, 6, 9)
+  msort(x)((x: Int, y: Int) => x < y)             //> res0: List[Int] = List(1, 3, 5, 6, 9)
 }

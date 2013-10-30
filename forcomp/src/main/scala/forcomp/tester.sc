@@ -16,14 +16,14 @@ object tester {
                                                   //| t,1), (u,1), (a,1), (l,1), (p,2), (o,1)) -> List(populates), List((e,2), (s,
                                                   //| 2), (n,1), (a,1), (r,1), (o,1)) -> List(seasoner), List((s,1), (u,1), (a,1),
                                                   //|  (b,2), (c,1), (r,1), (k,1), (o,1), (d,1)) -> List(buckboards), List((n,1), 
-                                                  //| (h,1), (s,1), (u,1)) -> List(huns), List((e,2), (s,2), (t,1), (u,1), (a,1), 
-                                                  //| (i,1), (g,1), (l,2), (r,1)) -> List(legislatures), List((s,1), (n,1), (t,1),
-                                                  //|  (u,1), (a,1), (l,1), (w,1)) -> List(walnuts), List((e,1), (a,1), (m,1), (g,
-                                                  //| 1), (l,1)) -> List(gleam), List((t,1), (a,1), (l,1), (h,1), (o,1)) -> List(l
-                                                  //| oath), List((s,1), (n,1), (p,1), (h,1), (r,1), (w,1), (o,2)) -> List(shopwor
-                                                  //| n), List((e,2), (y,1), (v,1), (l,2), (c,1), (r,1)) -> List(cleverly), List((
-                                                  //| e,2), (n,1), (f,1), (a,1), (r,2), (w,1), (o,1), (d,1)) -> List(forewarned), 
-                                                  //| List((e,3), (s,1), (t,1)
+                                                  //| (h,1), (s,1), (u,1)) -> List(shun, huns), List((e,2), (s,2), (t,1), (u,1), (
+                                                  //| a,1), (i,1), (g,1), (l,2), (r,1)) -> List(legislatures), List((s,1), (n,1), 
+                                                  //| (t,1), (u,1), (a,1), (l,1), (w,1)) -> List(walnuts), List((e,1), (a,1), (m,1
+                                                  //| ), (g,1), (l,1)) -> List(gleam), List((t,1), (a,1), (l,1), (h,1), (o,1)) -> 
+                                                  //| List(loath), List((s,1), (n,1), (p,1), (h,1), (r,1), (w,1), (o,2)) -> List(s
+                                                  //| hopworn), List((e,2), (y,1), (v,1), (l,2), (c,1), (r,1)) -> List(cleverly), 
+                                                  //| List((e,2), (n,1), (f,1), (a,1), (r,2), (w,1), (o,1), (d,1)) -> List(forewar
+                                                  //| ned), List((e,3), (s,1),
                                                   //| Output exceeds cutoff limit.
  
   //val keys = amap.keys
@@ -31,18 +31,18 @@ object tester {
   amap.get(key0)                                  //> res2: Option[List[forcomp.Anagrams.Word]] = None
   
   val values = amap.values                        //> values  : Iterable[List[forcomp.Anagrams.Word]] = MapLike(List(burch), List(
-                                                  //| populates), List(seasoner), List(buckboards), List(huns), List(legislatures)
-                                                  //| , List(walnuts), List(gleam), List(loath), List(shopworn), List(cleverly), L
-                                                  //| ist(forewarned), List(everest), List(milquetoasts), List(coroutines), List(b
-                                                  //| aked), List(tompkins), List(broadcasters), List(ching), List(carols), List(h
-                                                  //| omers), List(sherry), List(circuses), List(disassembly), List(bazaars), List
-                                                  //| (busboy), List(initiators), List(hindu), List(defections), List(fedders), Li
-                                                  //| st(continuing), List(vegetables), List(carbonation), List(whale), List(caval
-                                                  //| ierly), List(tanaka), List(dustbin), List(helsinki), List(trapping), List(pr
-                                                  //| iming), List(flowerpot), List(injunctions), List(aluminum), List(compiled), 
-                                                  //| List(intangibles), List(penthouse), List(lumped), List(feature), List(nests)
-                                                  //| , List(demonstrations), List(infers), List(sponging), List(highways), List(m
-                                                  //| ortification), List(engl
+                                                  //| populates), List(seasoner), List(buckboards), List(shun, huns), List(legisla
+                                                  //| tures), List(walnuts), List(gleam), List(loath), List(shopworn), List(clever
+                                                  //| ly), List(forewarned), List(everest), List(milquetoasts), List(coroutines), 
+                                                  //| List(baked), List(tompkins), List(rebroadcasts, broadcasters), List(ching), 
+                                                  //| List(carols), List(homers), List(sherry), List(circuses), List(disassembly),
+                                                  //|  List(bazaars), List(busboy), List(initiators), List(hindu), List(defections
+                                                  //| ), List(fedders), List(continuing), List(vegetables), List(carbonation), Lis
+                                                  //| t(whale), List(cavalierly), List(tanaka), List(dustbin), List(helsinki), Lis
+                                                  //| t(trapping), List(priming), List(flowerpot), List(injunctions), List(aluminu
+                                                  //| m), List(complied, compiled), List(intangibles), List(penthouse), List(plume
+                                                  //| d, lumped), List(feature), List(nests), List(demonstrations), List(infers), 
+                                                  //| List(sponging), List(hig
                                                   //| Output exceeds cutoff limit.
   
   values.size                                     //> res3: Int = 42343
@@ -53,6 +53,6 @@ object tester {
   
   //for(innerList <- values) yield (innerList.size > 1)
   
-  Anagrams.wordAnagrams("tea")                    //> res5: List[forcomp.Anagrams.Word] = List(ate)
+  Anagrams.wordAnagrams("ate")                    //> res5: List[forcomp.Anagrams.Word] = List(tea, eat, ate)
   
 }

@@ -2,6 +2,7 @@ package forcomp
 
 import common._
 import scala.collection.immutable.HashMap
+import scala.collection.mutable.ListBuffer
 
 object Anagrams {
 
@@ -65,17 +66,27 @@ object Anagrams {
   lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
     
     def dicOccurIter(word: Word, words: List[Word], dicMap: Map[Occurrences, List[Word]]): Map[Occurrences, List[Word]] = {
+      //println("[dicOccurIter] new word " + word + "; rest = " + words)
+      
       val occurrences = wordOccurrences(word)
+      //println("occurrences = " + occurrences)
+      
       var mapCopy = dicMap
+      //println("dictionary map = " + mapCopy)
 
       dicMap.get(occurrences) match {
         case Some(wordList: List[Word]) => {
-          wordList +: word
-          mapCopy += (occurrences -> wordList)
+          //println("existing wordlist = " + wordList)
+          var newWordList = List[String]()
+          newWordList = word :: wordList
+          //println("wordlist after append = " + newWordList)
+          mapCopy += (occurrences -> newWordList)
+          //println("occurrence already in map... now adding = " + mapCopy)
         }
         case None => {
           val wordList = List(word)
           mapCopy += (occurrences -> wordList)
+          //println("occurrence not in the map... adding newly = " + mapCopy)
         }
       }
 
@@ -120,9 +131,7 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = {
-    
-  }
+  def combinations(occurrences: Occurrences): List[Occurrences] = ???
 
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.
