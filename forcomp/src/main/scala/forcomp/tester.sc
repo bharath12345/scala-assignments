@@ -7,9 +7,9 @@ object tester {
   Anagrams.wordOccurrences("hello")               //> res0: forcomp.Anagrams.Occurrences = List((e,1), (h,1), (l,2), (o,1))
                                         
                                         
-  val wordList = List("jai", "shri", "ram!")      //> wordList  : List[String] = List(jai, shri, ram!)
-  Anagrams.sentenceOccurrences(wordList)          //> res1: forcomp.Anagrams.Occurrences = List((s,1), (j,1), (!,1), (a,2), (m,1),
-                                                  //|  (i,2), (h,1), (r,2))
+  val wordList = List("jai", "shri", "ram")       //> wordList  : List[String] = List(jai, shri, ram)
+  Anagrams.sentenceOccurrences(wordList)          //> res1: forcomp.Anagrams.Occurrences = List((s,1), (j,1), (a,2), (m,1), (i,2),
+                                                  //|  (h,1), (r,2))
                                          
   val amap = Anagrams.dictionaryByOccurrences     //> amap  : Map[forcomp.Anagrams.Occurrences,List[forcomp.Anagrams.Word]] = Map(
                                                   //| List((u,1), (b,1), (c,1), (h,1), (r,1)) -> List(burch), List((e,1), (s,1), (
@@ -56,12 +56,10 @@ object tester {
   Anagrams.wordAnagrams("ate")                    //> res5: List[forcomp.Anagrams.Word] = List(tea, eat, ate)
   
   var comb = List(('a', 2), ('b', 2))             //> comb  : List[(Char, Int)] = List((a,2), (b,2))
-  Anagrams.combinations(comb)                     //> singles = List((a,1), (a,2), (b,1), (b,2))
-                                                  //| combos = Map(a -> List((a,2), (a,1)), b -> List((b,2), (b,1)))
-                                                  //| list of tuples = List(List((a,1)), List((a,2)))
-                                                  //| list of tuples = List(List((b,1)), List((b,2)))
-                                                  //| list of tuples = List(List((a,1)), List((a,2)))
-                                                  //| list of tuples = List(List((b,1)), List((b,2)))
-                                                  //| res6: List[forcomp.Anagrams.Occurrences] = List()
+  Anagrams.combinations(comb)                     //> ch = b tm = 2 acc = List(List())
+                                                  //| ch = a tm = 2 acc = List(List(), List((b,1)), List((b,2)))
+                                                  //| res6: List[forcomp.Anagrams.Occurrences] = List(List(), List((b,1)), List((b
+                                                  //| ,2)), List((a,1)), List((a,2)), List((a,1), (b,1)), List((a,2), (b,1)), List
+                                                  //| ((a,1), (b,2)), List((a,2), (b,2)))
   
 }

@@ -35,4 +35,14 @@ object slide_week_5_5 {
                                                   //| 
   encode(testList)                                //> res1: List[(Any, Int)] = List((a,3), (b,1), (c,2), (a,1))
   
+  
+  /////////
+  
+  def capitalize(c: Char): Char = c.toUpper       //> capitalize: (c: Char)Char
+  
+  val name = "bharath"                            //> name  : String = bharath
+  
+  name map capitalize                             //> res2: String = BHARATH
+  name map (c => c.toUpper)                       //> res3: String = BHARATH
+  
 }
