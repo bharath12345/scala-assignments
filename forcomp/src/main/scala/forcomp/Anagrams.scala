@@ -66,27 +66,18 @@ object Anagrams {
   lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
     
     def dicOccurIter(word: Word, words: List[Word], dicMap: Map[Occurrences, List[Word]]): Map[Occurrences, List[Word]] = {
-      //println("[dicOccurIter] new word " + word + "; rest = " + words)
-      
       val occurrences = wordOccurrences(word)
-      //println("occurrences = " + occurrences)
-      
       var mapCopy = dicMap
-      //println("dictionary map = " + mapCopy)
-
+      
       dicMap.get(occurrences) match {
         case Some(wordList: List[Word]) => {
-          //println("existing wordlist = " + wordList)
           var newWordList = List[String]()
           newWordList = word :: wordList
-          //println("wordlist after append = " + newWordList)
           mapCopy += (occurrences -> newWordList)
-          //println("occurrence already in map... now adding = " + mapCopy)
         }
         case None => {
           val wordList = List(word)
           mapCopy += (occurrences -> wordList)
-          //println("occurrence not in the map... adding newly = " + mapCopy)
         }
       }
 
@@ -131,7 +122,79 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+    val singles = for {
+      (char, count) <- occurrences;
+      i <- 1 to count
+    } yield (char, i)
+    println("singles = " + singles)
+   
+    // make Lists of occurrences for each character
+    // finally u have a map like Map(('a', List[('a',1),('a',2)]), ('b', List[('b',1),('b',2)])) 
+    def pack(tuple: (Char, Int), tuples: List[(Char, Int)], acc: Map[Char, List[(Char, Int)]] = Map.empty): Map[Char, List[(Char, Int)]] = {
+      if(acc contains tuple._1) {
+        val newacc = acc + (tuple._1 -> (tuple +: acc(tuple._1)))
+        if(tuples.size != 0)
+          pack(tuples.head, tuples.tail, newacc)
+        else
+          newacc  
+      } else {
+        val newacc = acc + (tuple._1 -> List(tuple))
+        if(tuples.size != 0)
+          pack(tuples.head, tuples.tail, newacc)
+        else
+          newacc
+      }
+    }    
+    val combos = pack(singles.head, singles.tail)
+    println("combos = " + combos)
+    
+    def getListOfTuples(tuple: (Char, Int), tupleList: List[(Char, Int)], acc: List[List[(Char, Int)]] = List.empty): List[List[(Char, Int)]] = {
+      val newacc = List(tuple) +: acc
+      if(tupleList.size != 0)
+        getListOfTuples(tupleList.head, tupleList.tail, newacc)
+      else 
+        newacc
+    }
+    
+    def getListOfNTuples(
+        fullMap: Map[Char, List[(Char, Int)]],
+        n: Int,
+        acc: List[List[(Char, Int)]] = List.empty): List[List[(Char, Int)]] = {
+      
+      def buildTupleList(remainingMap: Map[Char, List[(Char, Int)]], innerList: List[(Char, Int)] = List.empty): List[(Char, Int)] = {
+        val filteredMap = for((c, i) <- innerList) yield remainingMap - c // do not consider characters already in the list
+        
+        /*val filteredMap = remainingMap - tuple._1 // remove list of tuples of this character from the map
+        if(filteredMap.size != 0) {
+          if()
+        } else 
+          innerList  
+        }*/
+        
+        innerList
+      }
+    
+      for(tuple <- singles) {
+        val allCombinations = buildTupleList(fullMap, List(tuple))
+      }
+      
+      acc
+      
+    }
+    
+    val finalList : List[List[(Char, Int)]] = List.empty;
+    for(i <- 1 to occurrences.size) {
+      for((k,v) <- combos) { 
+        val listOfTuples = getListOfTuples(v.head, v.tail)
+        println("list of tuples = " + listOfTuples)
+      }
+    }
+    
+    println("final list = " + finalList)
+    
+    finalList
+  }
 
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.

@@ -7,9 +7,9 @@ object tester {
   Anagrams.wordOccurrences("hello")               //> res0: forcomp.Anagrams.Occurrences = List((e,1), (h,1), (l,2), (o,1))
                                         
                                         
-  val wordList = List("jai", "shri", "ram")       //> wordList  : List[String] = List(jai, shri, ram)
-  Anagrams.sentenceOccurrences(wordList)          //> res1: forcomp.Anagrams.Occurrences = List((s,1), (j,1), (a,2), (m,1), (i,2),
-                                                  //|  (h,1), (r,2))
+  val wordList = List("jai", "shri", "ram!")      //> wordList  : List[String] = List(jai, shri, ram!)
+  Anagrams.sentenceOccurrences(wordList)          //> res1: forcomp.Anagrams.Occurrences = List((s,1), (j,1), (!,1), (a,2), (m,1),
+                                                  //|  (i,2), (h,1), (r,2))
                                          
   val amap = Anagrams.dictionaryByOccurrences     //> amap  : Map[forcomp.Anagrams.Occurrences,List[forcomp.Anagrams.Word]] = Map(
                                                   //| List((u,1), (b,1), (c,1), (h,1), (r,1)) -> List(burch), List((e,1), (s,1), (
@@ -47,12 +47,21 @@ object tester {
   
   values.size                                     //> res3: Int = 42343
   
-  val biglist = List()                            //> biglist  : List[Nothing] = List()
-  values.foreach(innerList => if(innerList.size > 1) biglist +: innerList)
-  biglist                                         //> res4: List[Nothing] = List()
+  var biglist = 0                                 //> biglist  : Int = 0
+  values.foreach(innerList => biglist = biglist + innerList.size)
+  biglist                                         //> res4: Int = 45374
   
   //for(innerList <- values) yield (innerList.size > 1)
   
   Anagrams.wordAnagrams("ate")                    //> res5: List[forcomp.Anagrams.Word] = List(tea, eat, ate)
+  
+  var comb = List(('a', 2), ('b', 2))             //> comb  : List[(Char, Int)] = List((a,2), (b,2))
+  Anagrams.combinations(comb)                     //> singles = List((a,1), (a,2), (b,1), (b,2))
+                                                  //| combos = Map(a -> List((a,2), (a,1)), b -> List((b,2), (b,1)))
+                                                  //| list of tuples = List(List((a,1)), List((a,2)))
+                                                  //| list of tuples = List(List((b,1)), List((b,2)))
+                                                  //| list of tuples = List(List((a,1)), List((a,2)))
+                                                  //| list of tuples = List(List((b,1)), List((b,2)))
+                                                  //| res6: List[forcomp.Anagrams.Occurrences] = List()
   
 }
