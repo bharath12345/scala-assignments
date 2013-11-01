@@ -4,7 +4,8 @@ object tester {
   
   println("hello world")                          //> hello world
   
-  Anagrams.wordOccurrences("hello")               //> res0: forcomp.Anagrams.Occurrences = List((e,1), (h,1), (l,2), (o,1))
+  Anagrams.wordOccurrences("hellow")              //> res0: forcomp.Anagrams.Occurrences = List((e,1), (l,2), (h,1), (w,1), (o,1))
+                                                  //| 
                                         
                                         
   val wordList = List("jai", "shri", "ram")       //> wordList  : List[String] = List(jai, shri, ram)
@@ -56,19 +57,7 @@ object tester {
   Anagrams.wordAnagrams("ate")                    //> res5: List[forcomp.Anagrams.Word] = List(tea, eat, ate)
   
   var comb = List(('a', 2), ('b', 2))             //> comb  : List[(Char, Int)] = List((a,2), (b,2))
-  Anagrams.combinations(comb)                     //> ch = b tm = 2 acc = List(List())
-                                                  //| comb = List()
-                                                  //| x = List(List(), List((b,1)), List((b,2))) y = List(List((b,1)), List((b,2))
-                                                  //| )
-                                                  //| ch = a tm = 2 acc = List(List(), List((b,1)), List((b,2)))
-                                                  //| comb = List()
-                                                  //| comb = List((b,1))
-                                                  //| comb = List((b,2))
-                                                  //| x = List(List(), List((b,1)), List((b,2)), List((a,1)), List((a,2)), List((a
-                                                  //| ,1), (b,1)), List((a,2), (b,1)), List((a,1), (b,2)), List((a,2), (b,2))) y =
-                                                  //|  List(List((a,1)), List((a,2)), List((a,1), (b,1)), List((a,2), (b,1)), List
-                                                  //| ((a,1), (b,2)), List((a,2), (b,2)))
-                                                  //| res6: List[forcomp.Anagrams.Occurrences] = List(List(), List((b,1)), List((b
+  Anagrams.combinations(comb)                     //> res6: List[forcomp.Anagrams.Occurrences] = List(List(), List((b,1)), List((b
                                                   //| ,2)), List((a,1)), List((a,2)), List((a,1), (b,1)), List((a,2), (b,1)), List
                                                   //| ((a,1), (b,2)), List((a,2), (b,2)))
                                                   
@@ -76,11 +65,22 @@ object tester {
                                                   //> x  : List[(Char, Int)] = List((a,1), (d,1), (l,1), (r,1))
   val y = List(('r', 1))                          //> y  : List[(Char, Int)] = List((r,1))
   
-  Anagrams.subtract(x, y)                         //> ch = a tm = 1
-                                                  //| ch = d tm = 1
-                                                  //| ch = l tm = 1
-                                                  //| ch = r tm = 1
-                                                  //| a = List((a,1), (d,1), (l,1))
-                                                  //| res7: forcomp.Anagrams.Occurrences = List((a,1), (d,1), (l,1))
+  Anagrams.subtract(x, y)                         //> res7: forcomp.Anagrams.Occurrences = List((a,1), (d,1), (l,1))
+                                                  
+  val s = List(('a', 2), ('b', 2))                //> s  : List[(Char, Int)] = List((a,2), (b,2))
+  (for {
+    (ch, tm) <- s
+  } yield ch).mkString                            //> res8: String = ab
   
+  val a = List(('a', 2), ('b', 2))                //> a  : List[(Char, Int)] = List((a,2), (b,2))
+  val b = List(('a', 1), ('b', 2))                //> b  : List[(Char, Int)] = List((a,1), (b,2))
+  
+  val z = (for {
+    (cha, tma) <- a
+    (chb, tmb) <- b
+    if(cha == chb)
+    if(tma - tmb != 0)
+  } yield (cha, tma - tmb))                       //> z  : List[(Char, Int)] = List((a,1))
+  
+  wordList.flatten.mkString                       //> res9: String = jaishriram
 }

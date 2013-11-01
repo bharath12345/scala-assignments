@@ -67,17 +67,17 @@ object Anagrams {
 
     def dicOccurIter(word: Word, words: List[Word], dicMap: Map[Occurrences, List[Word]] = Map.empty): Map[Occurrences, List[Word]] = {
       val occurrences = wordOccurrences(word)
-      
+
       val newWordList = dicMap.get(occurrences) match {
         case Some(wordList: List[Word]) => word :: wordList
         case None => List(word)
       }
-      
+
       val mapCopy = dicMap + (occurrences -> newWordList)
       if (!words.isEmpty)
         dicOccurIter(words.head.toLowerCase, words.tail, mapCopy)
       else
-        mapCopy    
+        mapCopy
     }
 
     dicOccurIter(dictionary.head.toLowerCase, dictionary.tail);
@@ -114,21 +114,20 @@ object Anagrams {
   def combinations(occurrences: Occurrences): List[Occurrences] =
     (occurrences foldRight List[Occurrences](Nil)) {
       case ((ch, tm), acc) => {
-        println("ch = " + ch + " tm = " + tm + " acc = " + acc)
-        
-        val y = (for { 
-            comb <- acc;
-            _ = println("comb = " + comb)
-            n <- 1 to tm
-          } yield ((ch, n) :: comb) 
-        )
-        
+        //println("ch = " + ch + " tm = " + tm + " acc = " + acc)
+
+        val y = (for {
+          comb <- acc;
+          //_ = println("comb = " + comb)
+          n <- 1 to tm
+        } yield ((ch, n) :: comb))
+
         val x = acc ++ y
-        println("x = " + x + " y = " + y)
+        //println("x = " + x + " y = " + y)
         x
       }
     }
-  
+
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -141,33 +140,13 @@ object Anagrams {
    *  and has no zero-entries.
    */
   def subtract(x: Occurrences, y: Occurrences): Occurrences = {
-    /*(x foldRight List[Occurrences](Nil)) {
-      case ((ch, tm), acc) => {
-        println("ch = " + ch + " tm = " + tm + " acc = " + acc)
-        
-        if(y contains (ch, tm)) {
-          println("y contains this one... ignoring... (" + ch + "," + tm + ")")
-          acc
-        } else {
-          val a = List((ch, tm)) :: acc
-          println("a = " + a)
-          a
-        }   
-      }
-    }*/
-    
-    //val b = List.empty
     val a: Occurrences = (for {
       (ch, tm) <- x
-      _ = println("ch = " + ch + " tm = " + tm)
-      
-      if(!(y contains (ch, tm)))
-    } yield (ch, tm)
-    )
-    println("a = " + a)
-    
-    //val c = List.flatten(a)
-    //println("b = " + b)
+      //_ = println("ch = " + ch + " tm = " + tm)
+
+      if (!(y contains (ch, tm)))
+    } yield (ch, tm))
+    //println("a = " + a)
     a
   }
 
@@ -212,6 +191,51 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    val so = sentenceOccurrences(sentence)
+    val comb = combinations(so)
+    //val sa = List(wordAnagrams(sentence.flatten.mkString))
+
+    def occurString(o: Occurrences): String = {
+      (for {
+        (ch, tm) <- o
+      } yield ch).mkString
+    }
+
+    def lessenOccurrence(x: Occurrences, y: Occurrences): Occurrences = {
+      (for {
+        (cha, tma) <- x
+        (chb, tmb) <- y
+        if (cha == chb)
+        if(tma - tmb != 0)
+      } yield (cha, tma - tmb))
+    }
+
+    def findOccur(occur: Occurrences, sentOccur: Occurrences, 
+        combin: List[Occurrences] = List.empty, acc: List[Sentence] = List.empty): List[Sentence] = {
+      
+      if (occur.length == 0) findOccur(combin.head, sentOccur, combin.tail) // for the null list
+
+      val s = occurString(occur)
+      val wa = wordAnagrams(s)
+      if (wa.length == 0) {
+        // no anagrams for this occurrence... no point proceeding... start with a different combo
+        if(combin.length != 0)
+          findOccur(combin.head, sentOccur, combin.tail)
+      }
+      
+      val lesser = lessenOccurrence(so, occur)
+      if(lesser.size == 0) {
+        // super! we found a anagram sequence
+      } else {
+            
+      }
+
+      List.empty
+    }
+    findOccur(comb.head, so, comb.tail)
+
+    List.empty
+  }
 
 }
