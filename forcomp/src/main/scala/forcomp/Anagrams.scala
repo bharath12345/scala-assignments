@@ -115,71 +115,20 @@ object Anagrams {
     (occurrences foldRight List[Occurrences](Nil)) {
       case ((ch, tm), acc) => {
         println("ch = " + ch + " tm = " + tm + " acc = " + acc)
-        acc ++ 
-        (for { 
+        
+        val y = (for { 
             comb <- acc;
+            _ = println("comb = " + comb)
             n <- 1 to tm
-          } yield (ch, n) :: comb 
+          } yield ((ch, n) :: comb) 
         )
+        
+        val x = acc ++ y
+        println("x = " + x + " y = " + y)
+        x
       }
     }
-  /*def combinations(occurrences: Occurrences): List[Occurrences] = {
-    val singles = for {
-      (char, count) <- occurrences;
-      i <- 1 to count
-    } yield (char, i)
-    println("singles = " + singles) // singles = List((a,1), (a,2), (b,1), (b,2))
-   
-    // make a map like Map(('a', List[('a',1),('a',2)]), ('b', List[('b',1),('b',2)])) 
-    def pack(tuple: (Char, Int), tuples: List[(Char, Int)], acc: Map[Char, List[(Char, Int)]] = Map.empty): Map[Char, List[(Char, Int)]] = {
-      if(acc contains tuple._1) {
-        val newacc = acc + (tuple._1 -> (tuple +: acc(tuple._1)))
-        if(tuples.size != 0)
-          pack(tuples.head, tuples.tail, newacc)
-        else
-          newacc  
-      } else {
-        val newacc = acc + (tuple._1 -> List(tuple))
-        if(tuples.size != 0)
-          pack(tuples.head, tuples.tail, newacc)
-        else
-          newacc
-      }
-    }    
-    val combos = pack(singles.head, singles.tail)
-    println("combos = " + combos)
-    
-    ////////////////////////////////
-    
-    def getListOfNTuples(fullMap: Map[Char, List[(Char, Int)]], n: Int,
-        acc: List[List[(Char, Int)]] = List.empty): List[List[(Char, Int)]] = {
-      
-      def buildTupleList(remainingMap: Map[Char, List[(Char, Int)]], innerList: List[(Char, Int)] = List.empty): List[(Char, Int)] = {
-        val filteredMap = for((c, i) <- innerList) yield remainingMap - c // do not consider characters already in the list
-        if(filteredMap.size != 0 && innerList.size != n) {
-          // pick a key in the remaining map and find a remaining tuple in it and add it to the list
-          filteredMap(0).keys(0)
-        } else {
-          innerList
-        }
-      }
-    
-      for(tuple <- singles) {
-        acc +: buildTupleList(fullMap, List(tuple))
-      }
-      acc
-    }
-    
-    ///////////////////////////////
-    
-    val finalList : List[List[(Char, Int)]] = List.empty;
-    for(i <- 1 to occurrences.size) {
-      finalList +: getListOfNTuples(combos, i)
-    }
-    println("final list = " + finalList)
-    finalList
-  }*/
-
+  
   /**
    * Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -191,7 +140,36 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    /*(x foldRight List[Occurrences](Nil)) {
+      case ((ch, tm), acc) => {
+        println("ch = " + ch + " tm = " + tm + " acc = " + acc)
+        
+        if(y contains (ch, tm)) {
+          println("y contains this one... ignoring... (" + ch + "," + tm + ")")
+          acc
+        } else {
+          val a = List((ch, tm)) :: acc
+          println("a = " + a)
+          a
+        }   
+      }
+    }*/
+    
+    //val b = List.empty
+    val a: Occurrences = (for {
+      (ch, tm) <- x
+      _ = println("ch = " + ch + " tm = " + tm)
+      
+      if(!(y contains (ch, tm)))
+    } yield (ch, tm)
+    )
+    println("a = " + a)
+    
+    //val c = List.flatten(a)
+    //println("b = " + b)
+    a
+  }
 
   /**
    * Returns a list of all anagram sentences of the given sentence.

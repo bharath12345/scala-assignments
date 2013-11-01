@@ -57,9 +57,30 @@ object tester {
   
   var comb = List(('a', 2), ('b', 2))             //> comb  : List[(Char, Int)] = List((a,2), (b,2))
   Anagrams.combinations(comb)                     //> ch = b tm = 2 acc = List(List())
+                                                  //| comb = List()
+                                                  //| x = List(List(), List((b,1)), List((b,2))) y = List(List((b,1)), List((b,2))
+                                                  //| )
                                                   //| ch = a tm = 2 acc = List(List(), List((b,1)), List((b,2)))
+                                                  //| comb = List()
+                                                  //| comb = List((b,1))
+                                                  //| comb = List((b,2))
+                                                  //| x = List(List(), List((b,1)), List((b,2)), List((a,1)), List((a,2)), List((a
+                                                  //| ,1), (b,1)), List((a,2), (b,1)), List((a,1), (b,2)), List((a,2), (b,2))) y =
+                                                  //|  List(List((a,1)), List((a,2)), List((a,1), (b,1)), List((a,2), (b,1)), List
+                                                  //| ((a,1), (b,2)), List((a,2), (b,2)))
                                                   //| res6: List[forcomp.Anagrams.Occurrences] = List(List(), List((b,1)), List((b
                                                   //| ,2)), List((a,1)), List((a,2)), List((a,1), (b,1)), List((a,2), (b,1)), List
                                                   //| ((a,1), (b,2)), List((a,2), (b,2)))
+                                                  
+  val x = List(('a', 1), ('d', 1), ('l', 1), ('r', 1))
+                                                  //> x  : List[(Char, Int)] = List((a,1), (d,1), (l,1), (r,1))
+  val y = List(('r', 1))                          //> y  : List[(Char, Int)] = List((r,1))
+  
+  Anagrams.subtract(x, y)                         //> ch = a tm = 1
+                                                  //| ch = d tm = 1
+                                                  //| ch = l tm = 1
+                                                  //| ch = r tm = 1
+                                                  //| a = List((a,1), (d,1), (l,1))
+                                                  //| res7: forcomp.Anagrams.Occurrences = List((a,1), (d,1), (l,1))
   
 }
